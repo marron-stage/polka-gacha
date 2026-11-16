@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ポルカの星空オリパシミュレーター（プロトタイプ）</title>
+  <style>
+    :root {
+      --bg-dark: #0b0d1e;
+      --panel-bg: rgba(18, 22, 48, 0.85);
+      --border-glow: rgba(180, 140, 255, 0.45);
+      --gold: #ffd700;
+      --text-main: #ffffff;
+      --text-sub: #c8ccee;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background-color: var(--bg-dark);
+      background-image: linear-gradient(rgba(10, 12, 30, 0.55), rgba(10, 12, 30, 0.75)), url('assets/bg_starry.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ヘッダー */
+    header {
+      text-align: center;
+      padding: 8px 0;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 12px rgba(190, 130, 255, 0.9);
+    }
+
+    header p {
+      font-size: 0.78rem;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    /* 仮想収支パネル */
+    .stats-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-glow);
+      border-radius: 14px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-item .label {
+      font-size: 0.7rem;
+      color: var(--text-sub);
+      display: block;
+    }
+
+    .stat-item .value {
+      font-size: 0.95rem;
+      font-weight: bold;
+      margin-top: 2px;
+      display: block;
+    }
+
+    .plus { color: #5dff9e; }
+    .minus { color: #ff6b8b; }
+
+    /* メインステージ（待機・動画・結果表示） */
+    .stage-box {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 12;
+      max-height: 520px;
+      background: rgba(12, 14, 34, 0.75);
+      border: 1.5px solid var(--border-glow);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    /* 待機画面 */
+    .idle-view {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .idle-circle {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      border: 2px dashed rgba(255, 225, 130, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      color: #ffe89e;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+      animation: spinSlow 16s linear infinite;
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .idle-text {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+      line-height: 1.6;
+    }
+
+    /* 動画再生レイヤー */
+    .video-overlay {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      display: none;
+      z-index: 20;
+      cursor: pointer;
+    }
+
+    .video-overlay video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .skip-badge {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      pointer-events: none;
+    }
+
+    /* 結果表示レイヤー */
+    .result-view {
+      position: absolute;
+      inset: 0;
+      background: rgba(12, 15, 38, 0.92);
+      display: none;
+      flex-direction: column;
+      padding: 14px;
+      z-index: 15;
+      overflow-y: auto;
+    }
+
+    .result-header {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #ffe89e;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      flex: 1;
+      align-content: center;
+    }
+
+    .cards-grid.single {
+      grid-template-columns: 1fr;
+      max-width: 240px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .card-item {
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid #888;
+      animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .card-rank {
+      font-size: 0.72rem;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+
+    .card-name {
+      font-size: 0.82rem;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    .card-val {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+    }
+
+    /* レアリティ別カラー */
+    .rarity-white { border-color: #d8dee9; }
+    .rarity-white .card-rank { background: #d8dee9; color: #1a1a1a; }
+
+    .rarity-blue { border-color: #4da6ff; box-shadow: 0 0 8px rgba(77, 166, 255, 0.35); }
+    .rarity-blue .card-rank { background: #4da6ff; color: #fff; }
+
+    .rarity-green { border-color: #3ddc84; box-shadow: 0 0 10px rgba(61, 220, 132, 0.4); }
+    .rarity-green .card-rank { background: #3ddc84; color: #0a2918; }
+
+    .rarity-red { border-color: #ff4d6d; box-shadow: 0 0 12px rgba(255, 77, 109, 0.55); }
+    .rarity-red .card-rank { background: #ff4d6d; color: #fff; }
+
+    .rarity-gold { border-color: #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.65); }
+    .rarity-gold .card-rank { background: linear-gradient(90deg, #ffd700, #ffa500); color: #221600; }
+
+    .rarity-rainbow {
+      border-color: #ff80ed;
+      box-shadow: 0 0 18px rgba(255, 128, 237, 0.8);
+      background: linear-gradient(135deg, rgba(255,0,128,0.18), rgba(0,212,255,0.18), rgba(255,215,0,0.18));
+    }
+    .rarity-rainbow .card-rank {
+      background: linear-gradient(90deg, #ff5e7e, #ffd700, #3ddc84, #4da6ff, #c77dff);
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    }
+
+    /* ガチャボタン */
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button.gacha-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.1s ease, filter 0.15s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    button.gacha-btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-single {
+      background: linear-gradient(135deg, #4b6cb7, #182848);
+      border: 1px solid rgba(130, 180, 255, 0.5);
+    }
+
+    .btn-ten {
+      background: linear-gradient(135deg, #b833ff, #ff6a88);
+      border: 1px solid rgba(255, 200, 240, 0.6);
+    }
+
+    .btn-sub {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: normal;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    /* 結果連動アフィリエイト導線枠 */
+    .aff-box {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-glow);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .aff-box h3 {
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      color: #ffe89e;
+    }
+
+    .aff-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-top: 8px;
+      color: #fff;
+    }
+
+    .aff-snkrdunk { background: linear-gradient(90deg, #1e88e5, #00acc1); }
+    .aff-oripa { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+    .aff-rakuten { background: #bf0000; font-size: 0.78rem; padding: 8px; }
+
+    /* デバッグ用テストバー（公開時は削除OK） */
+    .debug-box {
+      background: rgba(0, 0, 0, 0.65);
+      border: 1px dashed rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.72rem;
+      color: #ccc;
+    }
+
+    .debug-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .debug-buttons button {
+      background: #2a2f55;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+
+    .reset-link {
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      text-decoration: underline;
+      font-size: 0.75rem;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: rgba(200, 204, 238, 0.7);
+      padding: 10px 0 20px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>✨ ポルカの星空オリパガチャ ✨</h1>
+      <p>確率を体感できる無料オリパシミュレーター</p>
+    </header>
+
+    <!-- 仮想収支カウンター -->
+    <section class="stats-panel">
+      <div class="stat-item">
+        <span class="label">仮想使用額</span>
+        <span class="value" id="stat-spent">0円</span>
+      </div>
+      <div class="stat-item">
+        <span class="label">獲得カード総額</span>
+        <span class="value" id="stat-earned">0円</span>
+      </div>
+      <div class="stat-item">
+        <span class="label">トータル収支</span>
+        <span class="value" id="stat-balance">0円</span>
+      </div>
+    </section>
+
+    <!-- メインステージ -->
+    <main class="stage-box">
+      <!-- 初期待機画面 -->
+      <div class="idle-view" id="idle-view">
+        <div class="idle-circle">☆ 召喚待機中 ☆</div>
+        <p class="idle-text">
+          下のボタンを押すとポルカちゃんが<br>
+          魔法陣からカードを召喚するよ！<br>
+          <small>（白 → 青 → 緑 → 赤 → 金 → 虹）</small>
+        </p>
+      </div>
+
+      <!-- 6秒動画再生レイヤー -->
+      <div class="video-overlay" id="video-overlay" onclick="skipVideo()">
+        <video id="gacha-video" playsinline muted preload="auto"></video>
+        <div class="skip-badge">タップでスキップ ⏭</div>
+      </div>
+
+      <!-- 抽選結果画面 -->
+      <div class="result-view" id="result-view">
+        <div class="result-header" id="result-header">召喚結果！</div>
+        <div class="cards-grid" id="cards-grid"></div>
+      </div>
+    </main>
+
+    <!-- ガチャ実行ボタン -->
+    <section class="controls">
+      <button class="gacha-btn btn-single" onclick="playGacha(1)">
+        1回引く
+        <span class="btn-sub">仮想 500円</span>
+      </button>
+      <button class="gacha-btn btn-ten" onclick="playGacha(10)">
+        10連引く
+        <span class="btn-sub">仮想 5,000円（最高演出再生）</span>
+      </button>
+    </section>
+
+    <!-- 結果連動アフィリエイト枠（仮UI） -->
+    <section class="aff-box" id="aff-box"></section>
+
+    <!-- 自分用テストバー（公開前に削除） -->
+    <section class="debug-box">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span>🛠 テスト用（動画確認＆リセット）</span>
+        <button class="reset-link" onclick="resetStats()">収支リセット</button>
+      </div>
+      <div class="debug-buttons">
+        <button onclick="testRarity('white')">白確認</button>
+        <button onclick="testRarity('blue')">青確認</button>
+        <button onclick="testRarity('green')">緑確認</button>
+        <button onclick="testRarity('red')">赤確認</button>
+        <button onclick="testRarity('gold')">金確認</button>
+        <button onclick="testRarity('rainbow')">虹確認</button>
+      </div>
+    </section>
+
+    <footer>
+      ※本サイトはオリパの確率や収支を体感するための無料シミュレーターです。<br>
+      実際の課金・購入は無理のない予算で計画的にお楽しみください。
+    </footer>
+  </div>
+
+  <script>
+    // レアリティ定義（ランク順・確率・動画パス・排出カード例）
+    const RARITIES = [
+      {
+        key: 'white',
+        rank: 1,
+        label: '白・ノーマル',
+        prob: 55, // 55%
+        video: 'assets/gacha_white.mp4',
+        cards: [
+          { name: 'ノーマルカードパック', val: 100 },
+          { name: 'コモン枠シングル', val: 150 }
+        ]
+      },
+      {
+        key: 'blue',
+        rank: 2,
+        label: '青・レア',
+        prob: 25, // 25%
+        video: 'assets/gacha_blue.mp4',
+        cards: [
+          { name: 'R枠キラカード', val: 300 },
+          { name: 'アートレア枠', val: 450 }
+        ]
+      },
+      {
+        key: 'green',
+        rank: 3,
+        label: '緑・ハイレア',
+        prob: 12, // 12%
+        video: 'assets/gacha_green.mp4',
+        cards: [
+          { name: 'SR確定枠カード', val: 1200 },
+          { name: '人気キャラHR枠', val: 1800 }
+        ]
+      },
+      {
+        key: 'red',
+        rank: 4,
+        label: '赤・スーパーレア',
+        prob: 5, // 5%
+        video: 'assets/gacha_red.mp4',
+        cards: [
+          { name: '人気SARシングル', val: 6000 },
+          { name: '未開封BOX引換枠', val: 8500 }
+        ]
+      },
+      {
+        key: 'gold',
+        rank: 5,
+        label: '金・ウルトラレア',
+        prob: 2.5, // 2.5%
+        video: 'assets/gacha_gold.mp4',
+        cards: [
+          { name: '人気PSA10鑑定品', val: 25000 },
+          { name: '高騰中プロモカード', val: 35000 }
+        ]
+      },
+      {
+        key: 'rainbow',
+        rank: 6,
+        label: '虹・最高レア確定',
+        prob: 0.5, // 0.5%
+        video: 'assets/gacha_rainbow.mp4',
+        cards: [
+          { name: 'トップレアPSA10（極美品）', val: 100000 },
+          { name: '伝説級シリアルナンバー枠', val: 150000 }
+        ]
+      }
+    ];
+
+    const COST_PER_PULL = 500;
+    let totalSpent = 0;
+    let totalEarned = 0;
+    let currentResults = [];
+    let isPlaying = false;
+
+    const videoOverlay = document.getElementById('video-overlay');
+    const gachaVideo = document.getElementById('gacha-video');
+    const resultView = document.getElementById('result-view');
+    const idleView = document.getElementById('idle-view');
+    const cardsGrid = document.getElementById('cards-grid');
+    const affBox = document.getElementById('aff-box');
+
+    // 確率抽選
+    function drawOne() {
+      const rand = Math.random() * 100;
+      let acc = 0;
+      for (const r of RARITIES) {
+        acc += r.prob;
+        if (rand < acc) {
+          const card = r.cards[Math.floor(Math.random() * r.cards.length)];
+          return { rarity: r, card };
+        }
+      }
+      const fallback = RARITIES[0];
+      return { rarity: fallback, card: fallback.cards[0] };
+    }
+
+    // ガチャ実行（1回 or 10連）
+    function playGacha(count) {
+      if (isPlaying) return;
+      isPlaying = true;
+
+      currentResults = [];
+      let highestRarity = RARITIES[0];
+
+      for (let i = 0; i < count; i++) {
+        const res = drawOne();
+        currentResults.push(res);
+        if (res.rarity.rank > highestRarity.rank) {
+          highestRarity = res.rarity;
+        }
+      }
+
+      // 収支加算
+      totalSpent += count * COST_PER_PULL;
+      const earnedThisTime = currentResults.reduce((sum, item) => sum + item.card.val, 0);
+      totalEarned += earnedThisTime;
+
+      startVideoAndShowResult(highestRarity);
+    }
+
+    // テスト用（指定レアリティ確定）
+    function testRarity(key) {
+      if (isPlaying) return;
+      isPlaying = true;
+      const target = RARITIES.find(r => r.key === key) || RARITIES[0];
+      currentResults = [{ rarity: target, card: target.cards[0] }];
+      startVideoAndShowResult(target);
+    }
+
+    // 動画再生開始
+    function startVideoAndShowResult(highestRarity) {
+      idleView.style.display = 'none';
+      resultView.style.display = 'none';
+      videoOverlay.style.display = 'block';
+
+      gachaVideo.src = highestRarity.video;
+      gachaVideo.currentTime = 0;
+
+      gachaVideo.onended = () => {
+        showResults();
+      };
+
+      gachaVideo.onerror = () => {
+        // 動画ファイル未配置時でも結果画面へ進めるフォールバック
+        showResults();
+      };
+
+      gachaVideo.play().catch(() => {
+        showResults();
+      });
+    }
+
+    // タップでスキップ
+    function skipVideo() {
+      if (!isPlaying) return;
+      gachaVideo.pause();
+      showResults();
+    }
+
+    // 結果画面表示
+    function showResults() {
+      videoOverlay.style.display = 'none';
+      resultView.style.display = 'flex';
+      isPlaying = false;
+
+      updateStatsUI();
+
+      // カード描画
+      cardsGrid.innerHTML = '';
+      cardsGrid.className = currentResults.length === 1 ? 'cards-grid single' : 'cards-grid';
+
+      const earnedNow = currentResults.reduce((s, x) => s + x.card.val, 0);
+      const spentNow = currentResults.length * COST_PER_PULL;
+      document.getElementById('result-header').textContent =
+        `今回の結果：${earnedNow.toLocaleString()}円分（投資 ${spentNow.toLocaleString()}円）`;
+
+      currentResults.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `card-item rarity-${item.rarity.key}`;
+        div.innerHTML = `
+          <span class="card-rank">${item.rarity.label}</span>
+          <div class="card-name">${item.card.name}</div>
+          <div class="card-val">換算：${item.card.val.toLocaleString()}円</div>
+        `;
+        cardsGrid.appendChild(div);
+      });
+
+      updateAffiliateBox();
+    }
+
+    // 収支表示更新
+    function updateStatsUI() {
+      const balance = totalEarned - totalSpent;
+      document.getElementById('stat-spent').textContent = `${totalSpent.toLocaleString()}円`;
+      document.getElementById('stat-earned').textContent = `${totalEarned.toLocaleString()}円`;
+
+      const balEl = document.getElementById('stat-balance');
+      balEl.textContent = `${balance >= 0 ? '+' : ''}${balance.toLocaleString()}円`;
+      balEl.className = `value ${balance >= 0 ? 'plus' : 'minus'}`;
+    }
+
+    // 結果連動アフィリエイト導線切り替え（リンク先は後でASP URLに差し替え）
+    function updateAffiliateBox() {
+      const balance = totalEarned - totalSpent;
+      const hasBigHit = currentResults.some(r => r.rarity.rank >= 4); // 赤以上
+
+      affBox.style.display = 'block';
+
+      if (hasBigHit) {
+        affBox.innerHTML = `
+          <h3>🎉 神引き達成！今日のヒキは絶好調！</h3>
+          <p>この運気のまま本番のオンラインオリパを試してみる？（※予算は計画的に！）</p>
+          <a href="#" class="aff-btn aff-oripa" target="_blank" rel="noopener">▶ 初回無料ポイント付きオリパを見る（PR）</a>
+          <a href="#" class="aff-btn aff-rakuten" target="_blank" rel="noopener">📦 当たったカードを保護するローダー・スリーブ（楽天PR）</a>
+        `;
+      } else if (balance < 0) {
+        const loss = Math.abs(balance);
+        affBox.innerHTML = `
+          <h3>💸 現在の仮想マイナス：${loss.toLocaleString()}円</h3>
+          <p>これだけの金額があれば、スニダンで欲しいシングルカードやBOXが確実に買えたかも…！</p>
+          <a href="#" class="aff-btn aff-snkrdunk" target="_blank" rel="noopener">🔍 スニダンで欲しいカードの相場を見る（PR）</a>
+        `;
+      } else {
+        affBox.innerHTML = `
+          <h3>✨ ナイスプラス収支！</h3>
+          <p>コレクションを綺麗に保管する定番サプライグッズはこちら！</p>
+          <a href="#" class="aff-btn aff-rakuten" target="_blank" rel="noopener">📦 楽天市場でカード保護グッズを見る（PR）</a>
+        `;
+      }
+    }
+
+    // 収支リセット
+    function resetStats() {
+      totalSpent = 0;
+      totalEarned = 0;
+      updateStatsUI();
+      affBox.style.display = 'none';
+      resultView.style.display = 'none';
+      idleView.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
