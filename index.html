@@ -7,7 +7,7 @@
   <style>
     :root {
       --bg-dark: #0b0d1e;
-      --panel-bg: rgba(18, 22, 48, 0.88);
+      --panel-bg: rgba(18, 22, 48, 0.9);
       --border-glow: rgba(180, 140, 255, 0.45);
       --gold: #ffd700;
       --text-main: #ffffff;
@@ -38,18 +38,18 @@
     .container {
       width: 100%;
       max-width: 440px;
-      padding: 12px 14px;
+      padding: 10px 14px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 9px;
     }
 
     /* PR表記バー */
     .pr-notice {
       text-align: center;
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       color: rgba(220, 224, 255, 0.75);
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.45);
       padding: 3px 8px;
       border-radius: 6px;
     }
@@ -63,13 +63,13 @@
     }
 
     .title-area h1 {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       letter-spacing: 0.03em;
       text-shadow: 0 0 12px rgba(190, 130, 255, 0.9);
     }
 
     .title-area p {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: #ffe89e;
       margin-top: 2px;
     }
@@ -79,9 +79,9 @@
       background: rgba(255, 255, 255, 0.14);
       border: 1px solid var(--border-glow);
       color: #fff;
-      padding: 6px 10px;
+      padding: 5px 10px;
       border-radius: 20px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       cursor: pointer;
       white-space: nowrap;
     }
@@ -91,7 +91,7 @@
       background: var(--panel-bg);
       border: 1px solid var(--border-glow);
       border-radius: 12px;
-      padding: 8px 10px;
+      padding: 7px 10px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
@@ -100,15 +100,15 @@
     }
 
     .stat-item .label {
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       color: var(--text-sub);
       display: block;
     }
 
     .stat-item .value {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: bold;
-      margin-top: 2px;
+      margin-top: 1px;
       display: block;
     }
 
@@ -119,10 +119,10 @@
     .stage-box {
       position: relative;
       width: 100%;
-      height: 52vh;
-      min-height: 310px;
-      max-height: 430px;
-      background: rgba(8, 10, 26, 0.82);
+      height: 50vh;
+      min-height: 300px;
+      max-height: 410px;
+      background: rgba(8, 10, 26, 0.85);
       border: 1.5px solid var(--border-glow);
       border-radius: 16px;
       overflow: hidden;
@@ -139,8 +139,8 @@
     }
 
     .idle-circle {
-      width: 126px;
-      height: 126px;
+      width: 120px;
+      height: 120px;
       margin: 0 auto 12px;
       border-radius: 50%;
       border: 2px dashed rgba(255, 225, 130, 0.7);
@@ -159,7 +159,7 @@
     }
 
     .idle-text {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--text-sub);
       line-height: 1.55;
     }
@@ -189,118 +189,112 @@
       border: 1px solid rgba(255, 255, 255, 0.45);
       padding: 5px 11px;
       border-radius: 20px;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       pointer-events: none;
     }
 
-    /* 結果表示レイヤー */
-    .result-view {
+    /* 動画終了直後のメイン結論＆PRレイヤー */
+    .stage-result-view {
       position: absolute;
       inset: 0;
-      background: rgba(12, 15, 38, 0.94);
+      background: radial-gradient(circle at top, rgba(35, 42, 88, 0.96), rgba(11, 14, 34, 0.98));
       display: none;
       flex-direction: column;
-      padding: 12px;
+      justify-content: center;
+      padding: 16px;
       z-index: 15;
-      overflow-y: auto;
-    }
-
-    .result-header {
       text-align: center;
-      font-size: 0.88rem;
-      font-weight: bold;
-      margin-bottom: 8px;
-      color: #ffe89e;
+      animation: fadeIn 0.25s ease-out;
     }
 
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-      flex: 1;
-      align-content: center;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
     }
 
-    .cards-grid.single {
-      grid-template-columns: 1fr;
-      max-width: 230px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .card-item {
-      border-radius: 8px;
-      padding: 7px 6px;
-      text-align: center;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1.5px solid #888;
-      animation: popIn 0.25s ease-out;
-    }
-
-    @keyframes popIn {
-      from { transform: scale(0.88); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .card-rank {
-      font-size: 0.68rem;
-      font-weight: bold;
-      padding: 1px 7px;
-      border-radius: 8px;
+    .res-badge {
       display: inline-block;
-      margin-bottom: 3px;
-    }
-
-    .card-name {
-      font-size: 0.76rem;
+      margin: 0 auto 8px;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
       font-weight: bold;
-      margin-bottom: 2px;
     }
 
-    .card-val {
-      font-size: 0.7rem;
+    .res-summary-box {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .res-amount {
+      font-size: 1.35rem;
+      font-weight: bold;
+      color: #ffe89e;
+      margin: 2px 0;
+    }
+
+    .res-diff {
+      font-size: 0.8rem;
       color: var(--text-sub);
     }
 
-    /* レアリティ別カラー */
-    .rarity-white { border-color: #d8dee9; }
-    .rarity-white .card-rank { background: #d8dee9; color: #1a1a1a; }
-
-    .rarity-blue { border-color: #4da6ff; box-shadow: 0 0 8px rgba(77, 166, 255, 0.35); }
-    .rarity-blue .card-rank { background: #4da6ff; color: #fff; }
-
-    .rarity-green { border-color: #3ddc84; box-shadow: 0 0 10px rgba(61, 220, 132, 0.4); }
-    .rarity-green .card-rank { background: #3ddc84; color: #0a2918; }
-
-    .rarity-red { border-color: #ff4d6d; box-shadow: 0 0 12px rgba(255, 77, 109, 0.55); }
-    .rarity-red .card-rank { background: #ff4d6d; color: #fff; }
-
-    .rarity-gold { border-color: #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.65); }
-    .rarity-gold .card-rank { background: linear-gradient(90deg, #ffd700, #ffa500); color: #221600; }
-
-    .rarity-rainbow {
-      border-color: #ff80ed;
-      box-shadow: 0 0 18px rgba(255, 128, 237, 0.8);
-      background: linear-gradient(135deg, rgba(255,0,128,0.18), rgba(0,212,255,0.18), rgba(255,215,0,0.18));
+    .stage-pr-box {
+      background: rgba(0, 0, 0, 0.38);
+      border: 1px solid rgba(255, 215, 130, 0.35);
+      border-radius: 12px;
+      padding: 12px;
     }
-    .rarity-rainbow .card-rank {
-      background: linear-gradient(90deg, #ff5e7e, #ffd700, #3ddc84, #4da6ff, #c77dff);
+
+    .stage-pr-title {
+      font-size: 0.88rem;
+      font-weight: bold;
+      color: #ffe89e;
+      margin-bottom: 5px;
+    }
+
+    .stage-pr-desc {
+      font-size: 0.76rem;
+      color: #e4e7ff;
+      line-height: 1.5;
+      margin-bottom: 9px;
+    }
+
+    .aff-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      padding: 10px 8px;
+      border-radius: 9px;
+      font-size: 0.82rem;
+      font-weight: bold;
       color: #fff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
     }
+
+    .aff-btn + .aff-btn {
+      margin-top: 7px;
+    }
+
+    .aff-snkrdunk { background: linear-gradient(90deg, #1e88e5, #00acc1); }
+    .aff-oripa { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+    .aff-rakuten { background: #bf0000; font-size: 0.76rem; padding: 8px; }
 
     /* ガチャボタン */
     .controls {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 9px;
     }
 
     button.gacha-btn {
       border: none;
       border-radius: 12px;
-      padding: 12px 8px;
-      font-size: 0.92rem;
+      padding: 11px 8px;
+      font-size: 0.9rem;
       font-weight: bold;
       cursor: pointer;
       color: #fff;
@@ -324,63 +318,136 @@
 
     .btn-sub {
       display: block;
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       font-weight: normal;
       opacity: 0.9;
       margin-top: 2px;
     }
 
-    /* 結果連動アフィリエイト導線枠 */
-    .aff-box {
+    /* 通知付き折りたたみ式 排出内訳タブ */
+    .breakdown-wrapper {
       background: var(--panel-bg);
       border: 1px solid var(--border-glow);
       border-radius: 12px;
-      padding: 11px;
-      font-size: 0.8rem;
-      line-height: 1.45;
-      display: none;
+      overflow: hidden;
     }
 
-    .aff-box h3 {
-      font-size: 0.86rem;
-      margin-bottom: 4px;
-      color: #ffe89e;
-    }
-
-    .aff-btn {
-      display: block;
+    .breakdown-toggle {
       width: 100%;
-      text-align: center;
-      text-decoration: none;
-      padding: 9px;
-      border-radius: 9px;
+      background: none;
+      border: none;
+      color: #fff;
+      padding: 11px 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
       font-weight: bold;
-      margin-top: 7px;
+      cursor: pointer;
+    }
+
+    .toggle-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .notify-badge {
+      background: #ff4d6d;
+      color: #fff;
+      font-size: 0.65rem;
+      padding: 2px 7px;
+      border-radius: 10px;
+      display: none;
+      animation: pulseBadge 1.4s infinite;
+    }
+
+    @keyframes pulseBadge {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .breakdown-content {
+      display: none;
+      padding: 0 11px 11px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .breakdown-content.open {
+      display: block;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-top: 9px;
+    }
+
+    .cards-grid.single {
+      grid-template-columns: 1fr;
+    }
+
+    .card-item {
+      border-radius: 8px;
+      padding: 7px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid #888;
+    }
+
+    .card-rank {
+      font-size: 0.68rem;
+      font-weight: bold;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+
+    .card-val {
+      font-size: 0.78rem;
+      font-weight: bold;
       color: #fff;
     }
 
-    .aff-snkrdunk { background: linear-gradient(90deg, #1e88e5, #00acc1); }
-    .aff-oripa { background: linear-gradient(90deg, #f59e0b, #ef4444); }
-    .aff-rakuten { background: #bf0000; font-size: 0.76rem; padding: 8px; }
+    /* レアリティ別カラー */
+    .rarity-white { border-color: #d8dee9; }
+    .rarity-white .card-rank, .badge-white { background: #d8dee9; color: #1a1a1a; }
 
-    /* 管理人ストーリー＆注意事項カード */
+    .rarity-blue { border-color: #4da6ff; }
+    .rarity-blue .card-rank, .badge-blue { background: #4da6ff; color: #fff; }
+
+    .rarity-green { border-color: #3ddc84; }
+    .rarity-green .card-rank, .badge-green { background: #3ddc84; color: #0a2918; }
+
+    .rarity-red { border-color: #ff4d6d; }
+    .rarity-red .card-rank, .badge-red { background: #ff4d6d; color: #fff; }
+
+    .rarity-gold { border-color: #ffd700; }
+    .rarity-gold .card-rank, .badge-gold { background: linear-gradient(90deg, #ffd700, #ffa500); color: #221600; }
+
+    .rarity-rainbow { border-color: #ff80ed; }
+    .rarity-rainbow .card-rank, .badge-rainbow {
+      background: linear-gradient(90deg, #ff5e7e, #ffd700, #3ddc84, #4da6ff, #c77dff);
+      color: #fff;
+    }
+
+    /* 管理人ストーリーとルール説明 */
     .story-card {
       background: rgba(16, 20, 44, 0.9);
       border: 1px solid rgba(255, 215, 120, 0.35);
       border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 0.78rem;
+      padding: 12px 13px;
+      font-size: 0.76rem;
       line-height: 1.65;
       color: #e4e7ff;
     }
 
     .story-card h2 {
-      font-size: 0.86rem;
+      font-size: 0.84rem;
       color: #ffe89e;
       margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
     }
 
     .story-card p {
@@ -391,7 +458,7 @@
       background: rgba(0, 0, 0, 0.35);
       border-radius: 8px;
       padding: 8px 10px;
-      font-size: 0.73rem;
+      font-size: 0.71rem;
       color: var(--text-sub);
       list-style: none;
     }
@@ -442,7 +509,7 @@
 
     footer {
       text-align: center;
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       color: rgba(200, 204, 238, 0.7);
       padding: 4px 0 18px;
       line-height: 1.5;
@@ -469,7 +536,7 @@
         <span class="value" id="stat-spent">0円</span>
       </div>
       <div class="stat-item">
-        <span class="label">獲得カード総額</span>
+        <span class="label">獲得総額</span>
         <span class="value" id="stat-earned">0円</span>
       </div>
       <div class="stat-item">
@@ -478,7 +545,7 @@
       </div>
     </section>
 
-    <!-- メインステージ -->
+    <!-- メインステージ（待機 → 6秒動画 → 結論＆PR直出し） -->
     <main class="stage-box">
       <!-- 初期待機画面 -->
       <div class="idle-view" id="idle-view">
@@ -496,11 +563,8 @@
         <div class="skip-badge">タップでスキップ ⏭</div>
       </div>
 
-      <!-- 抽選結果画面 -->
-      <div class="result-view" id="result-view">
-        <div class="result-header" id="result-header">召喚結果！</div>
-        <div class="cards-grid" id="cards-grid"></div>
-      </div>
+      <!-- 動画終了後の結論＆PR直出し画面 -->
+      <div class="stage-result-view" id="stage-result-view"></div>
     </main>
 
     <!-- ガチャ実行ボタン -->
@@ -515,8 +579,19 @@
       </button>
     </section>
 
-    <!-- 結果連動アフィリエイト枠 -->
-    <section class="aff-box" id="aff-box"></section>
+    <!-- 通知付き折りたたみ式 排出内訳タブ -->
+    <section class="breakdown-wrapper" id="breakdown-wrapper" style="display:none;">
+      <button class="breakdown-toggle" onclick="toggleBreakdown()">
+        <span class="toggle-left">
+          <span>📋 今回の排出内訳を見る</span>
+          <span class="notify-badge" id="notify-badge">NEW</span>
+        </span>
+        <span id="toggle-arrow">▼ 開く</span>
+      </button>
+      <div class="breakdown-content" id="breakdown-content">
+        <div class="cards-grid" id="cards-grid"></div>
+      </div>
+    </section>
 
     <!-- 管理人のストーリーとルール説明 -->
     <section class="story-card">
@@ -558,82 +633,15 @@
   </div>
 
   <script>
-    // 還元率 約97%（1回500円あたり期待値 485円）に設定したレアリティ定義
-    // 期待値内訳：
-    // 白: 0.50 * 100 = 50円
-    // 青: 0.28 * 300 = 84円
-    // 緑: 0.13 * 750 = 97.5円
-    // 赤: 0.06 * 1800 = 108円
-    // 金: 0.025 * 4000 = 100円
-    // 虹: 0.005 * 9100 = 45.5円
-    // 合計 = 485円（485 / 500 = 97.0%）
+    // 還元率 97.0%（1回500円に対して期待値485円）のシンプル表記設定
+    // 50*0.55 + 200*0.25 + 500*0.12 + 2000*0.055 + 6000*0.02 + 23500*0.005 = 485円
     const RARITIES = [
-      {
-        key: 'white',
-        rank: 1,
-        label: '白・ノーマル',
-        prob: 50.0,
-        video: 'gacha_white.mp4',
-        cards: [
-          { name: 'ノーマルカードパック', val: 80 },
-          { name: 'コモン枠シングル', val: 120 }
-        ]
-      },
-      {
-        key: 'blue',
-        rank: 2,
-        label: '青・レア',
-        prob: 28.0,
-        video: 'gacha_blue.mp4',
-        cards: [
-          { name: 'R枠キラカード', val: 250 },
-          { name: 'アートレア枠', val: 350 }
-        ]
-      },
-      {
-        key: 'green',
-        rank: 3,
-        label: '緑・ハイレア',
-        prob: 13.0,
-        video: 'gacha_green.mp4',
-        cards: [
-          { name: 'SR確定枠カード', val: 650 },
-          { name: '人気キャラHR枠', val: 850 }
-        ]
-      },
-      {
-        key: 'red',
-        rank: 4,
-        label: '赤・スーパーレア',
-        prob: 6.0,
-        video: 'gacha_red.mp4',
-        cards: [
-          { name: '人気SARシングル', val: 1500 },
-          { name: '注目プロモカード枠', val: 2100 }
-        ]
-      },
-      {
-        key: 'gold',
-        rank: 5,
-        label: '金・ウルトラレア',
-        prob: 2.5,
-        video: 'gacha_gold.mp4',
-        cards: [
-          { name: '人気PSA10鑑定品', val: 3500 },
-          { name: '未開封BOX引換枠', val: 4500 }
-        ]
-      },
-      {
-        key: 'rainbow',
-        rank: 6,
-        label: '虹・最高レア確定',
-        prob: 0.5,
-        video: 'gacha_rainbow.mp4',
-        cards: [
-          { name: 'トップレアPSA10（極美品）', val: 8200 },
-          { name: '伝説級ハイクラス枠', val: 10000 }
-        ]
-      }
+      { key: 'white',   rank: 1, label: '白・ハズレ枠',     prob: 55.0, val: 50,    video: 'gacha_white.mp4' },
+      { key: 'blue',    rank: 2, label: '青・末等枠',       prob: 25.0, val: 200,   video: 'gacha_blue.mp4' },
+      { key: 'green',   rank: 3, label: '緑・トントン枠',   prob: 12.0, val: 500,   video: 'gacha_green.mp4' },
+      { key: 'red',     rank: 4, label: '赤・ちょい当たり', prob: 5.5,  val: 2000,  video: 'gacha_red.mp4' },
+      { key: 'gold',    rank: 5, label: '金・当たり枠',     prob: 2.0,  val: 6000,  video: 'gacha_gold.mp4' },
+      { key: 'rainbow', rank: 6, label: '虹・大当たり枠',   prob: 0.5,  val: 23500, video: 'gacha_rainbow.mp4' }
     ];
 
     const COST_PER_PULL = 500;
@@ -645,10 +653,13 @@
 
     const videoOverlay = document.getElementById('video-overlay');
     const gachaVideo = document.getElementById('gacha-video');
-    const resultView = document.getElementById('result-view');
+    const stageResultView = document.getElementById('stage-result-view');
     const idleView = document.getElementById('idle-view');
+    const breakdownWrapper = document.getElementById('breakdown-wrapper');
+    const breakdownContent = document.getElementById('breakdown-content');
+    const notifyBadge = document.getElementById('notify-badge');
+    const toggleArrow = document.getElementById('toggle-arrow');
     const cardsGrid = document.getElementById('cards-grid');
-    const affBox = document.getElementById('aff-box');
     const soundBtn = document.getElementById('sound-toggle');
 
     function toggleSound() {
@@ -662,13 +673,9 @@
       let acc = 0;
       for (const r of RARITIES) {
         acc += r.prob;
-        if (rand < acc) {
-          const card = r.cards[Math.floor(Math.random() * r.cards.length)];
-          return { rarity: r, card };
-        }
+        if (rand < acc) return r;
       }
-      const fallback = RARITIES[0];
-      return { rarity: fallback, card: fallback.cards[0] };
+      return RARITIES[0];
     }
 
     function playGacha(count) {
@@ -681,13 +688,13 @@
       for (let i = 0; i < count; i++) {
         const res = drawOne();
         currentResults.push(res);
-        if (res.rarity.rank > highestRarity.rank) {
-          highestRarity = res.rarity;
+        if (res.rank > highestRarity.rank) {
+          highestRarity = res;
         }
       }
 
       totalSpent += count * COST_PER_PULL;
-      const earnedThisTime = currentResults.reduce((sum, item) => sum + item.card.val, 0);
+      const earnedThisTime = currentResults.reduce((sum, r) => sum + r.val, 0);
       totalEarned += earnedThisTime;
 
       startVideoAndShowResult(highestRarity);
@@ -697,32 +704,31 @@
       if (isPlaying) return;
       isPlaying = true;
       const target = RARITIES.find(r => r.key === key) || RARITIES[0];
-      currentResults = [{ rarity: target, card: target.cards[0] }];
+      currentResults = [target];
       startVideoAndShowResult(target);
     }
 
     function startVideoAndShowResult(highestRarity) {
       idleView.style.display = 'none';
-      resultView.style.display = 'none';
+      stageResultView.style.display = 'none';
       videoOverlay.style.display = 'block';
+
+      // 次の抽選時は内訳アコーディオンを一旦閉じておく
+      breakdownContent.classList.remove('open');
+      toggleArrow.textContent = '▼ 開く';
 
       gachaVideo.src = highestRarity.video;
       gachaVideo.currentTime = 0;
       gachaVideo.muted = !isSoundOn;
 
-      gachaVideo.onended = () => {
-        showResults();
-      };
-
-      gachaVideo.onerror = () => {
-        showResults();
-      };
+      gachaVideo.onended = () => showResults(highestRarity);
+      gachaVideo.onerror = () => showResults(highestRarity);
 
       const playPromise = gachaVideo.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
           gachaVideo.muted = true;
-          gachaVideo.play().catch(() => showResults());
+          gachaVideo.play().catch(() => showResults(highestRarity));
         });
       }
     }
@@ -730,36 +736,102 @@
     function skipVideo() {
       if (!isPlaying) return;
       gachaVideo.pause();
-      showResults();
+      let highest = currentResults[0];
+      currentResults.forEach(r => { if (r.rank > highest.rank) highest = r; });
+      showResults(highest);
     }
 
-    function showResults() {
+    function showResults(highestRarity) {
       videoOverlay.style.display = 'none';
-      resultView.style.display = 'flex';
+      stageResultView.style.display = 'flex';
       isPlaying = false;
 
       updateStatsUI();
+      renderStageResult(highestRarity);
+      renderBreakdown(highestRarity);
+    }
+
+    // メインステージ中央に結論＆PRを直接表示
+    function renderStageResult(highestRarity) {
+      const earnedNow = currentResults.reduce((s, r) => s + r.val, 0);
+      const spentNow = currentResults.length * COST_PER_PULL;
+      const diffNow = earnedNow - spentNow;
+      const totalBalance = totalEarned - totalSpent;
+      const hasBigHit = currentResults.some(r => r.rank >= 4); // 赤以上
+
+      let prHtml = '';
+      if (hasBigHit) {
+        prHtml = `
+          <div class="stage-pr-box">
+            <div class="stage-pr-title">🎉 神引き達成！最高「${highestRarity.label}」出現！</div>
+            <div class="stage-pr-desc">
+              （※当サイトでの景品交換はありません）<br>
+              このヒキのまま本番を試すなら、無理のない予算で初回無料枠から！
+            </div>
+            <a href="#" class="aff-btn aff-oripa" target="_blank" rel="noopener">▶ 初回無料ポイント付きオリパを見る（PR）</a>
+            <a href="#" class="aff-btn aff-rakuten" target="_blank" rel="noopener">📦 カード保護ローダー・スリーブ（楽天PR）</a>
+          </div>
+        `;
+      } else if (totalBalance < 0) {
+        const loss = Math.abs(totalBalance);
+        prHtml = `
+          <div class="stage-pr-box">
+            <div class="stage-pr-title">💸 現在の累計マイナス：${loss.toLocaleString()}円</div>
+            <div class="stage-pr-desc">
+              これだけの金額があれば、スニダンで欲しいシングルカードや未開封BOXが確実に買えたかも…！
+            </div>
+            <a href="#" class="aff-btn aff-snkrdunk" target="_blank" rel="noopener">🔍 スニダンで欲しいカードの相場を見る（PR）</a>
+          </div>
+        `;
+      } else {
+        prHtml = `
+          <div class="stage-pr-box">
+            <div class="stage-pr-title">✨ プラス収支キープ中！（※景品交換なし）</div>
+            <div class="stage-pr-desc">
+              引き際が肝心！手持ちの大切なカードを綺麗に保管する定番サプライはこちら。
+            </div>
+            <a href="#" class="aff-btn aff-rakuten" target="_blank" rel="noopener">📦 楽天市場でカード保護グッズを見る（PR）</a>
+          </div>
+        `;
+      }
+
+      stageResultView.innerHTML = `
+        <span class="res-badge badge-${highestRarity.key}">最高演出：${highestRarity.label}</span>
+        <div class="res-summary-box">
+          <div style="font-size:0.72rem; color:var(--text-sub);">今回の獲得相当額（仮想投資 ${spentNow.toLocaleString()}円）</div>
+          <div class="res-amount">${earnedNow.toLocaleString()}円相当</div>
+          <div class="res-diff">今回収支：<strong class="${diffNow >= 0 ? 'plus' : 'minus'}">${diffNow >= 0 ? '+' : ''}${diffNow.toLocaleString()}円</strong></div>
+        </div>
+        ${prHtml}
+      `;
+    }
+
+    // 折りたたみ排出内訳の更新と通知バッジ点灯
+    function renderBreakdown(highestRarity) {
+      breakdownWrapper.style.display = 'block';
+      notifyBadge.style.display = 'inline-block';
+      notifyBadge.textContent = highestRarity.rank >= 4 ? `NEW! ${highestRarity.label}` : `NEW (${currentResults.length}件)`;
 
       cardsGrid.innerHTML = '';
       cardsGrid.className = currentResults.length === 1 ? 'cards-grid single' : 'cards-grid';
 
-      const earnedNow = currentResults.reduce((s, x) => s + x.card.val, 0);
-      const spentNow = currentResults.length * COST_PER_PULL;
-      document.getElementById('result-header').textContent =
-        `今回の結果：${earnedNow.toLocaleString()}円分（仮想投資 ${spentNow.toLocaleString()}円）`;
-
-      currentResults.forEach(item => {
+      currentResults.forEach((r, idx) => {
         const div = document.createElement('div');
-        div.className = `card-item rarity-${item.rarity.key}`;
+        div.className = `card-item rarity-${r.key}`;
         div.innerHTML = `
-          <span class="card-rank">${item.rarity.label}</span>
-          <div class="card-name">${item.card.name}</div>
-          <div class="card-val">参考価値：${item.card.val.toLocaleString()}円</div>
+          <span class="card-rank">${idx + 1}. ${r.label}</span>
+          <span class="card-val">${r.val.toLocaleString()}円相当</span>
         `;
         cardsGrid.appendChild(div);
       });
+    }
 
-      updateAffiliateBox();
+    function toggleBreakdown() {
+      const isOpen = breakdownContent.classList.toggle('open');
+      toggleArrow.textContent = isOpen ? '▲ 閉じる' : '▼ 開く';
+      if (isOpen) {
+        notifyBadge.style.display = 'none'; // 開いたら通知バッジを消す
+      }
     }
 
     function updateStatsUI() {
@@ -772,41 +844,12 @@
       balEl.className = `value ${balance >= 0 ? 'plus' : 'minus'}`;
     }
 
-    function updateAffiliateBox() {
-      const balance = totalEarned - totalSpent;
-      const hasBigHit = currentResults.some(r => r.rarity.rank >= 4);
-
-      affBox.style.display = 'block';
-
-      if (hasBigHit) {
-        affBox.innerHTML = `
-          <h3>🎉 神引き達成！今日のヒキは絶好調！</h3>
-          <p>（※当サイトでの景品交換はありません）どうしても本番を試すなら、無理のない予算で初回無料枠から！</p>
-          <a href="#" class="aff-btn aff-oripa" target="_blank" rel="noopener">▶ 初回無料ポイント付きオリパを見る（PR）</a>
-          <a href="#" class="aff-btn aff-rakuten" target="_blank" rel="noopener">📦 大切なカードを保護するローダー・スリーブ（楽天PR）</a>
-        `;
-      } else if (balance < 0) {
-        const loss = Math.abs(balance);
-        affBox.innerHTML = `
-          <h3>💸 現在の仮想マイナス：${loss.toLocaleString()}円</h3>
-          <p>これだけの金額があれば、スニダンで欲しいシングルカードやBOXが確実に買えたかも…！</p>
-          <a href="#" class="aff-btn aff-snkrdunk" target="_blank" rel="noopener">🔍 スニダンで欲しいカードの相場を見る（PR）</a>
-        `;
-      } else {
-        affBox.innerHTML = `
-          <h3>✨ ナイスプラス収支！（※景品交換はありません）</h3>
-          <p>手持ちのコレクションを綺麗に保管する定番サプライグッズはこちら！</p>
-          <a href="#" class="aff-btn aff-rakuten" target="_blank" rel="noopener">📦 楽天市場でカード保護グッズを見る（PR）</a>
-        `;
-      }
-    }
-
     function resetStats() {
       totalSpent = 0;
       totalEarned = 0;
       updateStatsUI();
-      affBox.style.display = 'none';
-      resultView.style.display = 'none';
+      stageResultView.style.display = 'none';
+      breakdownWrapper.style.display = 'none';
       idleView.style.display = 'block';
     }
   </script>
